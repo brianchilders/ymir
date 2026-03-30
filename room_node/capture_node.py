@@ -79,17 +79,28 @@ async def run(config: RoomNodeConfig) -> None:
     signal.signal(signal.SIGTERM, _handle_sigterm)
     signal.signal(signal.SIGINT, _handle_sigterm)
 
-    async def _capture_and_ship() -> None:
+    utterance_queue: asyncio.Queue = asyncio.Queue()
+
+    def _capture_loop() -> None:
+        """Blocking capture loop — runs in a thread to avoid blocking the event loop."""
         for utterance in capture.iter_utterances():
             if stop_event.is_set():
                 break
+            loop.call_soon_threadsafe(utterance_queue.put_nowait, utterance)
+        loop.call_soon_threadsafe(utterance_queue.put_nowait, None)  # sentinel
 
+    async def _ship_loop() -> None:
+        """Async sender loop — drains utterances from the queue and dispatches them."""
+        while True:
+            utterance = await utterance_queue.get()
+            if utterance is None:
+                break
             doa = doa_reader.read()
             await sender.send(audio=utterance, doa=doa)
-        # Loop exited (iterator exhausted or stop requested) — unblock run()
         stop_event.set()
 
-    capture_task = asyncio.create_task(_capture_and_ship())
+    capture_task = asyncio.create_task(_ship_loop())
+    await loop.run_in_executor(None, _capture_loop)
     await stop_event.wait()
     capture.stop()
     capture_task.cancel()
