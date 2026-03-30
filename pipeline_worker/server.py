@@ -382,3 +382,7 @@ def _configure_logging(level: str) -> None:
         level=getattr(logging, level.upper(), logging.INFO),
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
+
+
+# Module-level app instance for uvicorn
+app = create_app()
