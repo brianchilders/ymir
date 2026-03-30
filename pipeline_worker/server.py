@@ -59,7 +59,7 @@ class AppState:
             confident_threshold=settings.voiceprint_confident_threshold,
             probable_threshold=settings.voiceprint_probable_threshold,
         )
-        self.memory = MemoryClient(settings.memory_mcp_url)
+        self.memory = MemoryClient(settings.memory_mcp_url, token=settings.memory_mcp_token)
         self.fallback = DiarizationFallback(
             hf_token=settings.hf_token or None,
         )
@@ -354,8 +354,6 @@ async def _notify_ha(
 ) -> None:
     """POST a probable-match notification to the Home Assistant webhook."""
     try:
-        async with state.memory._client:
-            pass  # use a one-shot client for HA
         import httpx
         async with httpx.AsyncClient(timeout=5.0) as ha:
             await ha.post(

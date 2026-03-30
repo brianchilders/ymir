@@ -4,20 +4,23 @@ Room node configuration loaded from environment / .env file.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Literal, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_ENV_FILE = Path(__file__).parent / ".env"
 
 
 class RoomNodeConfig(BaseSettings):
     """All configuration for a room node instance.
 
-    Values are read from environment variables or a .env file in the
-    working directory.  See .env.example for documentation on each field.
+    Values are read from environment variables or a .env file located in the
+    same directory as this file.  See .env.example for documentation on each field.
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(_ENV_FILE),
         env_file_encoding="utf-8",
         case_sensitive=False,
     )

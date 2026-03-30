@@ -4,24 +4,29 @@ Pipeline worker configuration loaded from environment / .env file.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_ENV_FILE = Path(__file__).parent / ".env"
 
 
 class Settings(BaseSettings):
     """All configuration for the pipeline worker.
 
-    Values are read from environment variables or a .env file in the
-    working directory.  See .env.example for documentation on each field.
+    Values are read from environment variables or a .env file located in the
+    same directory as this file.  See .env.example for documentation on each field.
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(_ENV_FILE),
         env_file_encoding="utf-8",
         case_sensitive=False,
     )
 
     # memory-mcp
     memory_mcp_url: str = "http://localhost:8900"
+    memory_mcp_token: str = ""
 
     # Service
     pipeline_port: int = 8001
