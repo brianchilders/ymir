@@ -70,24 +70,22 @@ async def run(config: RoomNodeConfig) -> None:
     )
 
     loop = asyncio.get_event_loop()
-    stop_event = asyncio.Event()
-
-    def _handle_sigterm(*_: object) -> None:
-        logger.info("SIGTERM received — shutting down")
-        loop.call_soon_threadsafe(stop_event.set)
-
-    signal.signal(signal.SIGTERM, _handle_sigterm)
-    signal.signal(signal.SIGINT, _handle_sigterm)
-
     utterance_queue: asyncio.Queue = asyncio.Queue()
+
+    def _handle_shutdown(*_: object) -> None:
+        logger.info("Shutting down...")
+        capture.stop()
+        # Unblock the ship loop with a sentinel
+        loop.call_soon_threadsafe(utterance_queue.put_nowait, None)
+
+    signal.signal(signal.SIGTERM, _handle_shutdown)
+    signal.signal(signal.SIGINT, _handle_shutdown)
 
     def _capture_loop() -> None:
         """Blocking capture loop — runs in a thread to avoid blocking the event loop."""
         for utterance in capture.iter_utterances():
-            if stop_event.is_set():
-                break
             loop.call_soon_threadsafe(utterance_queue.put_nowait, utterance)
-        loop.call_soon_threadsafe(utterance_queue.put_nowait, None)  # sentinel
+        loop.call_soon_threadsafe(utterance_queue.put_nowait, None)  # sentinel on natural exit
 
     async def _ship_loop() -> None:
         """Async sender loop — drains utterances from the queue and dispatches them."""
@@ -97,13 +95,10 @@ async def run(config: RoomNodeConfig) -> None:
                 break
             doa = doa_reader.read()
             await sender.send(audio=utterance, doa=doa)
-        stop_event.set()
 
-    capture_task = asyncio.create_task(_ship_loop())
+    ship_task = asyncio.create_task(_ship_loop())
     await loop.run_in_executor(None, _capture_loop)
-    await stop_event.wait()
-    capture.stop()
-    capture_task.cancel()
+    await ship_task
     logger.info("Capture node shut down cleanly")
 
 
