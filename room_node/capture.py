@@ -28,7 +28,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 SAMPLE_RATE = 16000
-CHUNK_SAMPLES = int(SAMPLE_RATE * 0.030)  # 30ms per VAD chunk
+CHUNK_SAMPLES = 512  # minimum chunk size required by Silero VAD (32ms at 16kHz)
 
 
 class AudioCapture:
