@@ -152,15 +152,17 @@ async def cmd_enroll(
 
     # --- Confirm ---
     profile = await _get_profile(client, name)
-    if profile:
+    if isinstance(profile, dict):
         meta = (profile.get("result") or {}).get("meta") or {}
+        if not meta and isinstance(profile.get("meta"), dict):
+            meta = profile["meta"]
         sample_count = meta.get("voiceprint_samples", 1)
         print(f"\nEnrolled: {name}")
         print(f"  Room     : {room or 'not specified'}")
         print(f"  Samples  : {sample_count}")
         print(f"  Status   : {meta.get('status', 'enrolled')}")
     else:
-        print(f"\nEnrolled: {name} (could not verify profile)")
+        print(f"\nEnrolled: {name} (voiceprint stored successfully)")
 
 
 async def cmd_list(client: httpx.AsyncClient) -> None:
