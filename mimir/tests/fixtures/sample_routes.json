@@ -1,0 +1,67 @@
+[
+  {
+    "event": {
+      "who": "Brian",
+      "transcript": "I need to pick up the kids from school at 3pm",
+      "emotion": "neutral",
+      "location": "kitchen",
+      "local_time": "2026-04-01T08:30:00",
+      "speaker_confidence": 0.92,
+      "objects_visible": ["coffee_mug"],
+      "activity": "morning_routine"
+    },
+    "expected_domain": "reminder"
+  },
+  {
+    "event": {
+      "who": "Brian",
+      "transcript": "Hey turn on the lights in the living room",
+      "emotion": "neutral",
+      "location": "hallway",
+      "local_time": "2026-04-01T19:00:00",
+      "speaker_confidence": 0.88,
+      "objects_visible": [],
+      "activity": null
+    },
+    "expected_domain": "home_control"
+  },
+  {
+    "event": {
+      "who": "Brian",
+      "transcript": "Good morning Heimdall",
+      "emotion": "happy",
+      "location": "kitchen",
+      "local_time": "2026-04-01T07:00:00",
+      "speaker_confidence": 0.95,
+      "objects_visible": [],
+      "activity": null
+    },
+    "expected_domain": "greeting"
+  },
+  {
+    "event": {
+      "who": "Aria",
+      "transcript": "What is the weather today",
+      "emotion": "neutral",
+      "location": "living_room",
+      "local_time": "2026-04-01T09:00:00",
+      "speaker_confidence": 0.91,
+      "objects_visible": [],
+      "activity": null
+    },
+    "expected_domain": "status"
+  },
+  {
+    "event": {
+      "who": "Brian",
+      "transcript": "I smell smoke coming from the kitchen",
+      "emotion": "anxious",
+      "location": "hallway",
+      "local_time": "2026-04-01T18:00:00",
+      "speaker_confidence": 0.87,
+      "objects_visible": [],
+      "activity": null
+    },
+    "expected_domain": "safety"
+  }
+]

@@ -3,6 +3,7 @@ members = [
     "nornir",
     "muninn",
     "verdandi",
+    "mimir",
 ]
 
 [tool.uv]
@@ -20,6 +21,7 @@ testpaths = [
     "nornir/tests",
     "muninn/tests",
     "verdandi/tests",
+    "mimir/tests",
     "pipeline_worker/tests",
     "room_node/tests",
     "enrollment/tests",
